@@ -31,7 +31,25 @@
 					"en": "Choose a domain for WordPress",
 					"fr": "Choisissez un domaine pour WordPress"
 				},
-				"example": "domain.org"
+				"example": "my-new-website.org"
+			},
+			{
+				"name": "old_domain",
+				"type": "domain",
+				"ask": {
+					"en": "Choose a old domain for WordPress",
+					"fr": "Choisissez votre ancien domaine pour WordPress"
+				},
+				"example": "my-old-website.org"
+			},
+			{
+				"name": "wp_backup",
+				"type": "string",
+				"ask": {
+					"en": "Enter a git url",
+					"fr": "Entrer votre url git"
+				},
+				"example": "https://username:password@github.com/username/repository.git"
 			},
 			{
 				"name": "path",
