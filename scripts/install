@@ -213,6 +213,16 @@ $wpcli_alias plugin activate companion-auto-update "$plugin_network"
 $wpcli_alias plugin activate wp-fail2ban-redux "$plugin_network"
 
 #=================================================
+# IMPORT WORDPRESS DB
+#=================================================
+
+if [ -e "$final_path/bdd.sql" ]; then
+echo "Import SQL"
+ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
+ynh_secure_remove "$final_path/*.sql"
+exit
+
+#=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
 
