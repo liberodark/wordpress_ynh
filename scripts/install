@@ -213,6 +213,24 @@ $wpcli_alias plugin activate companion-auto-update "$plugin_network"
 $wpcli_alias plugin activate wp-fail2ban-redux "$plugin_network"
 
 #=================================================
+# IMPORT WORDPRESS DB
+#=================================================
+
+if [ -e "$final_path/bdd.sql" ]; then
+ynh_print_info --message="Check SQL..."
+sed sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
+cat "$final_path/bdd.sql" | grep "$old_domain"
+ynh_print_info --message="Import SQL..."
+ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
+ynh_print_info --message="Remove SQL..."
+ynh_secure_remove "$final_path/*.sql"
+ynh_print_info --message="Disable Plugins..."
+$wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
+$wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
+$wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
+fi
+
+#=================================================
 # STORE THE CONFIG FILE CHECKSUM
 #=================================================
 
