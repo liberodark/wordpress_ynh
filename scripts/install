@@ -21,6 +21,7 @@ ynh_abort_if_errors
 #=================================================
 
 domain=$YNH_APP_ARG_DOMAIN
+old_domain=$YNH_APP_ARG_OLD_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin_wordpress=$YNH_APP_ARG_ADMIN
 language=$YNH_APP_ARG_LANGUAGE
@@ -217,9 +218,17 @@ $wpcli_alias plugin activate wp-fail2ban-redux "$plugin_network"
 #=================================================
 
 if [ -e "$final_path/bdd.sql" ]; then
-echo "Import SQL"
+ynh_print_info --message="Check SQL..."
+sed sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
+cat "$final_path/bdd.sql" | grep "$old_domain"
+ynh_print_info --message="Import SQL..."
 ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
+ynh_print_info --message="Remove SQL..."
 ynh_secure_remove "$final_path/*.sql"
+ynh_print_info --message="Disable Plugins..."
+$wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
+$wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
+$wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
 exit
 
 #=================================================
