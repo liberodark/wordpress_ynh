@@ -37,6 +37,10 @@ Use the admin panel of your wordpress to configure this app.
 
 Supported, with LDAP and SSO.
 
+#### Migration support
+
+Supported, with bdd import and bdd Check.
+
 #### Supported architectures
 
 * x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/wordpress%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/wordpress/)
