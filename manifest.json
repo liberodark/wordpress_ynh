@@ -10,8 +10,8 @@
 	"url": "https://wordpress.org/",
 	"license": "GPL-2.0",
 	"maintainer": {
-		"name": "Maniack Crudelis",
-		"email": "maniackc_dev@crudelis.fr"
+		"name": "liberodark",
+		"email": "liberodark@gmail.com"
 	},
     "requirements": {
         "yunohost": ">= 3.5"
@@ -35,7 +35,7 @@
 			},
 			{
 				"name": "old_domain",
-				"type": "domain",
+				"type": "string",
 				"ask": {
 					"en": "Choose a old domain for WordPress",
 					"fr": "Choisissez votre ancien domaine pour WordPress"
