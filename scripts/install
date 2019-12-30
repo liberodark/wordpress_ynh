@@ -229,7 +229,7 @@ ynh_print_info --message="Disable Plugins..."
 $wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
 $wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
 $wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
-exit
+fi
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
