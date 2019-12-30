@@ -74,7 +74,7 @@ Please do your pull request to the [testing branch](https://github.com/YunoHost-
 
 To try the testing branch, please proceed like that.
 ```
-sudo yunohost app install https://github.com/liberodark/wordpress_ynh/tree/4.9.x --debug
+sudo yunohost app install --debug https://github.com/liberodark/wordpress_ynh/tree/migration
 or
-sudo yunohost app upgrade wordpress -u https://github.com/liberodark/wordpress_ynh/tree/4.9.x --debug
+sudo yunohost app upgrade --debug wordpress -u https://github.com/liberodark/wordpress_ynh/tree/migration
 ```
