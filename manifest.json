@@ -35,7 +35,7 @@
 			},
 			{
 				"name": "old_domain",
-				"type": "string",
+				"type": "old_domain",
 				"ask": {
 					"en": "Choose a old domain for WordPress",
 					"fr": "Choisissez votre ancien domaine pour WordPress"
