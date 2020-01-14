@@ -63,6 +63,15 @@
 				"default": "en_US"
 			},
 			{
+				"name": "memory_limit",
+				"type": "memory_limit",
+				"ask": {
+					"en": "Choose the memory limit for WordPress (is in Mo)",
+					"fr": "Choissisez la limite de mémoire de WordPress (c'est en Mo)"
+				},
+				"default": "64"
+			},
+			{
 				"name": "multisite",
 				"type": "boolean",
 				"ask": {
