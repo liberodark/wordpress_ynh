@@ -231,10 +231,10 @@ ynh_print_info --message="Import SQL..."
 ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
 ynh_print_info --message="Remove SQL..."
 ynh_secure_remove "$final_path/*.sql"
-ynh_print_info --message="Disable Plugins..."
-$wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
-$wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
-$wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
+#ynh_print_info --message="Disable Plugins..."
+#$wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
+#$wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
+#$wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
 fi
 
 #=================================================
