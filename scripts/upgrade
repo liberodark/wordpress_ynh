@@ -8,6 +8,7 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+source _ynh_add_fpm_config
 
 #=================================================
 # LOAD SETTINGS
@@ -24,6 +25,13 @@ is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 multisite=$(ynh_app_setting_get --app=$app --key=multisite)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+
+overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
+overwrite_phpfpm=$(ynh_app_setting_get --app=$app --key=overwrite_phpfpm)
+admin_mail_html=$(ynh_app_setting_get --app=$app --key=admin_mail_html)
+
+fpm_footprint=$(ynh_app_setting_get --app=$app --key=fpm_footprint)
+fpm_usage=$(ynh_app_setting_get --app=$app --key=fpm_usage)
 
 #=================================================
 # CHECK VERSION
@@ -83,6 +91,50 @@ if grep add_filter.*auto_update $final_path/wp-config.php; then
 	sed --in-place '/add_filter.*auto_update/d' $final_path/wp-config.php
 fi
 
+# If admin_mail_html doesn't exist, create it
+if [ -z "$admin_mail_html" ]; then
+	admin_mail_html=1
+	ynh_app_setting_set --app=$app --key=admin_mail_html --value=$admin_mail_html
+fi
+
+# If overwrite_nginx doesn't exist, create it
+if [ -z "$overwrite_nginx" ]; then
+	overwrite_nginx=1
+	ynh_app_setting_set $app overwrite_nginx $overwrite_nginx
+fi
+
+# If overwrite_phpfpm doesn't exist, create it
+if [ -z "$overwrite_phpfpm" ]; then
+    overwrite_phpfpm=1
+    ynh_app_setting_set --app=$app --key=overwrite_phpfpm --value=$overwrite_phpfpm
+fi
+
+# If the app is private, set the usage to low, otherwise to high.
+if [ $is_public -eq 0 ]
+then
+    usage=low
+else
+    usage=high
+fi
+
+# If fpm_footprint doesn't exist, create it
+if [ -z "$fpm_footprint" ]; then
+    fpm_footprint=$usage
+    ynh_app_setting_set --app=$app --key=fpm_footprint --value=$fpm_footprint
+fi
+
+# If fpm_usage doesn't exist, create it
+if [ -z "$fpm_usage" ]; then
+    fpm_usage=$usage
+    ynh_app_setting_set --app=$app --key=fpm_usage --value=$fpm_usage
+fi
+
+# Replace wp-fail2ban by wp-fail2ban-redux
+wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O $final_path/wp-cli.phar
+wpcli_alias="php $final_path/wp-cli.phar --allow-root --path=$final_path"
+$wpcli_alias plugin is-installed wp-fail2ban && $wpcli_alias plugin deactivate wp-fail2ban && $wpcli_alias plugin uninstall wp-fail2ban
+$wpcli_alias plugin is-installed wp-fail2ban-redux || $wpcli_alias plugin install wp-fail2ban-redux
+
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
@@ -123,10 +175,13 @@ ynh_install_app_dependencies php5-cli
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
 
-# Create a dedicated nginx config
-ynh_add_nginx_config
+# Overwrite the nginx configuration only if it's allowed
+if [ $overwrite_nginx -eq 1 ]
+then
+    ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
+	ynh_add_nginx_config
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -139,10 +194,14 @@ ynh_system_user_create --username=$app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=4
 
-# Create a dedicated php-fpm config
-ynh_add_fpm_config
+# Overwrite the php-fpm configuration only if it's allowed
+if [ $overwrite_phpfpm -eq 1 ]
+then
+    ynh_script_progression --message="Upgrading php-fpm configuration..." --weight=4
+    # Create a dedicated php-fpm config
+    ynh_add_fpm_config --usage=$fpm_usage --footprint=$fpm_footprint
+fi
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -179,8 +238,8 @@ ynh_app_setting_set --app=$app --key=multisite --value=$multisite
 #=================================================
 ynh_script_progression --message="Updating plugins" --weight=11
 
-wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O $final_path/wp-cli.phar
-wpcli_alias="php $final_path/wp-cli.phar --allow-root --path=$final_path"
+# wget -nv https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O $final_path/wp-cli.phar
+# wpcli_alias="php $final_path/wp-cli.phar --allow-root --path=$final_path"
 update_plugin () {
 	( $wpcli_alias plugin is-installed $1 && $wpcli_alias plugin update $1 ) || $wpcli_alias plugin install $1
 }
@@ -188,8 +247,8 @@ update_plugin simple-ldap-login
 $wpcli_alias plugin activate simple-ldap-login $plugin_network
 update_plugin companion-auto-update
 $wpcli_alias plugin activate companion-auto-update $plugin_network
-update_plugin wp-fail2ban
-$wpcli_alias plugin activate wp-fail2ban $plugin_network
+update_plugin wp-fail2ban-redux
+$wpcli_alias plugin activate wp-fail2ban-redux $plugin_network
 
 # Disable broken plugin http-authentication
 $wpcli_alias plugin is-installed http-authentication && $wpcli_alias plugin deactivate http-authentication $plugin_network
