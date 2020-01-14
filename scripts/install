@@ -217,6 +217,7 @@ ynh_script_progression --message="Activating plugins..." --weight=4
 #=================================================
 
 # Limit time (Optional)
+ynh_print_info --message="You have 2min for transfert bdd.sql and wp-content in ""$final_path"..."
 sleep 120
 
 if [ -e "$final_path/bdd.sql" ]; then
