@@ -26,6 +26,7 @@ admin_wordpress=$YNH_APP_ARG_ADMIN
 language=$YNH_APP_ARG_LANGUAGE
 multisite=$YNH_APP_ARG_MULTISITE
 is_public=$YNH_APP_ARG_IS_PUBLIC
+memory_limit=$YNH_APP_ARG_MEMORY_LIMIT
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -105,6 +106,7 @@ ynh_system_user_create --username="$app"
 ynh_script_progression --message="Configuring php-fpm..." --weight=2
 
 # Create a dedicated php-fpm config
+ynh_replace_string "__MEMORYLIMIT__" "$memory_limit" "../conf/php-fpm.conf"
 ynh_add_fpm_config
 
 #=================================================
