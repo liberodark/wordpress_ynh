@@ -66,7 +66,7 @@ ynh_app_setting_set --app="$app" --key=multisite --value="$multisite"
 #=================================================
 ynh_script_progression --message="Installing dependencies..." --weight=9
 
-ynh_install_app_dependencies php5-cli
+ynh_install_app_dependencies php5-cli pv
 
 #=================================================
 # CREATE A MYSQL DATABASE
@@ -223,20 +223,16 @@ sleep 120
 if [ -e "$final_path/bdd.sql" ]; then
 ynh_print_info --message="Check SQL..."
 sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
-cat "$final_path/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
-ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
+pv "$final_path/bdd.sql | mysql -u "$db_name" -p"$db_pwd" "$db_name"
 ynh_print_info --message="Remove SQL..."
 ynh_secure_remove "$final_path/bdd.sql"
-#ynh_print_info --message="Disable Plugins..."
-#$wpcli_alias plugin desactivate simple-ldap-login "$plugin_network"
-#$wpcli_alias plugin desactivate companion-auto-update "$plugin_network"
-#$wpcli_alias plugin desactivate wp-fail2ban-redux "$plugin_network"
 fi
 
 if [ -e "$final_path/wp-content.tar.gz" ]; then
 ynh_print_info --message="Extract WP Content..."
 pushd "$final_path"
+rm -rf wp-content
 tar -xvf wp-content.tar.gz
 popd
 ynh_print_info --message="Remove WP Content..."
