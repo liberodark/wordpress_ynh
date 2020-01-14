@@ -27,6 +27,8 @@ language=$YNH_APP_ARG_LANGUAGE
 multisite=$YNH_APP_ARG_MULTISITE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 memory_limit=$YNH_APP_ARG_MEMORY_LIMIT
+old_domain=$YNH_APP_ARG_OLD_DOMAIN
+
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -220,7 +222,7 @@ $wpcli_alias plugin activate wp-fail2ban-redux "$plugin_network"
 
 if [ -e "$final_path/bdd.sql" ]; then
 ynh_print_info --message="Check SQL..."
-sed sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
+sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
 cat "$final_path/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
 ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
