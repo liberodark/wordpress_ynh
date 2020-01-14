@@ -220,6 +220,9 @@ $wpcli_alias plugin activate wp-fail2ban-redux "$plugin_network"
 # IMPORT WORDPRESS DB
 #=================================================
 
+# Limit time (Optional)
+sleep 120
+
 if [ -e "$final_path/bdd.sql" ]; then
 ynh_print_info --message="Check SQL..."
 sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
