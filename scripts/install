@@ -138,7 +138,7 @@ done
 ynh_print_info --message="Check SQL..."
 sed -i "s@"$old_domain"@"$domain"@g" "$final_path/conf/bdd.sql"
 # That help for debug
-cat "$final_path/bdd.sql" | grep "$old_domain"
+cat "$final_path/conf/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
 pv "$final_path/conf/bdd.sql | mysql -u "$db_name" -p"$db_pwd" "$db_name"
 #ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
