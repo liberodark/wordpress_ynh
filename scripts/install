@@ -123,7 +123,7 @@ ynh_add_fpm_config
 #=================================================
 ynh_script_progression --message="Configuring wordpress..."
 
-cp ../conf/wp-config.php "$final_path"/wp-config.php
+#cp ../conf/wp-config.php "$final_path"/wp-config.php
 # Change variables in Wordpress configuration
 ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_name" --target_file="$final_path"/wp-config.php
 ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path"/wp-config.php
@@ -167,22 +167,15 @@ fi
 
 if [ -e "$final_path/bdd.sql" ]; then
 ynh_print_info --message="Check SQL..."
-sed sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
+sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
 # That help for debug
 cat "$final_path/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
 pv "$final_path/bdd.sql | mysql -u "$db_name" -p"$db_pwd" "$db_name"
-#nh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
+#ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
 ynh_print_info --message="Remove SQL..."
 ynh_secure_remove "$final_path/*.sql"
 fi
-
-#=================================================
-# STORE THE CONFIG FILE CHECKSUM
-#=================================================
-
-# Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum --file="$final_path/wp-config.php"
 
 #=================================================
 # CREATE A CRON TASK FOR AUTOMATIC UPDATE
