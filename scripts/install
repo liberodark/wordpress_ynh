@@ -83,6 +83,7 @@ wget -O wp.tar.gz "$wp_backup" || exit
 tar -xvf wp.tar.gz || exit
 cp -a solution/* "$final_path"
 popd || exit
+rm -rf /tmp/dl
 
 #=================================================
 # NGINX CONFIGURATION
