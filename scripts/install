@@ -147,8 +147,8 @@ rm -f "$final_path/conf/*.sql"
 # Get the database table prefix
 db_prefix=$(grep '^$table_prefix' "$final_path/wp-config.php" | sed "s/.*'\(.*\)'.*/\1/" )
 
-ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path' WHERE option_name='siteurl'" --database=$app
-ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path' WHERE option_name='home'" --database=$app
+ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path_url' WHERE option_name='siteurl'" --database=$app
+ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path_url' WHERE option_name='home'" --database=$app
 
 #=================================================
 # CREATE A CRON TASK FOR AUTOMATIC UPDATE
