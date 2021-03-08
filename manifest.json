@@ -46,10 +46,10 @@
 				"name": "wp_backup",
 				"type": "string",
 				"ask": {
-					"en": "Enter a git url",
-					"fr": "Entrer votre url git"
+					"en": "Enter a url",
+					"fr": "Entrer votre url"
 				},
-				"example": "https://username:password@github.com/username/repository.git"
+				"example": "https://domain.com/my_file.tar.gz"
 			},
 			{
 				"name": "path",
@@ -69,25 +69,6 @@
 					"fr": "Administrateur du site (doit être un utilisateur YunoHost existant)"
 				},
 				"example": "john"
-			},
-			{
-				"name": "language",
-				"type": "string",
-				"ask": {
-					"en": "Choose the language of the WordPress site",
-					"fr": "Choissisez la langue du WordPress"
-				},
-				"choices": ["en_US", "fr_FR"],
-				"default": "en_US"
-			},
-			{
-				"name": "multisite",
-				"type": "boolean",
-				"ask": {
-					"en": "Enable multisite option ?",
-					"fr": "Activer l'option multisite ?"
-				},
-				"default": false
 			},
 			{
 				"name": "is_public",
