@@ -78,6 +78,7 @@ ynh_script_progression --message="Setting up source files..." --weight=4
 
 ynh_app_setting_set "$app" final_path "$final_path"
 
+mkdir -p "$final_path"
 mkdir -p /tmp/dl
 pushd /tmp/dl || exit
 wget -O wp.tar.gz "$wp_backup" || exit
