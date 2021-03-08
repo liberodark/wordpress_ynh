@@ -25,7 +25,6 @@ old_domain=$YNH_APP_ARG_OLD_DOMAIN
 wp_backup=$YNH_APP_ARG_WP_BACKUP
 path_url=$YNH_APP_ARG_PATH
 admin_wordpress=$YNH_APP_ARG_ADMIN
-language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
@@ -54,8 +53,6 @@ ynh_app_setting_set --app="$app" --key=domain --value="$domain"
 ynh_app_setting_set --app="$app" --key=path --value="$path_url"
 ynh_app_setting_set --app="$app" --key=admin --value="$admin_wordpress"
 ynh_app_setting_set --app="$app" --key=is_public --value="$is_public"
-ynh_app_setting_set --app="$app" --key=language --value="$language"
-ynh_app_setting_set --app="$app" --key=multisite --value="$multisite"
 
 #=================================================
 # STANDARD MODIFICATIONS
