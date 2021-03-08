@@ -136,14 +136,19 @@ done
 #=================================================
 
 ynh_print_info --message="Check SQL..."
-sed -i "s@"$old_domain"@"$domain"@g" "$final_path/conf/bdd.sql"
+#sed -i "s@"$old_domain"@"$domain"@g" "$final_path/conf/bdd.sql"
 # That help for debug
 #cat "$final_path/conf/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
 pv "$final_path/conf/bdd.sql" | mysql -u "$db_name" -p"$db_pwd" "$db_name"
-#ynh_print_info --message="Remove SQL..."
-#ynh_secure_remove "$final_path/conf/*.sql"
-ls -lha "$final_path/conf/
+ynh_print_info --message="Remove SQL..."
+rm -f "$final_path/conf/*.sql"
+
+# Get the database table prefix
+db_prefix=$(grep '^$table_prefix' "$final_path/wp-config.php" | sed "s/.*'\(.*\)'.*/\1/" )
+
+ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path' WHERE option_name='siteurl'" --database=$app
+ynh_mysql_execute_as_root --sql="UPDATE ${db_prefix}options SET option_value='https://$domain$path' WHERE option_name='home'" --database=$app
 
 #=================================================
 # CREATE A CRON TASK FOR AUTOMATIC UPDATE
