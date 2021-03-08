@@ -26,7 +26,6 @@ wp_backup=$YNH_APP_ARG_WP_BACKUP
 path_url=$YNH_APP_ARG_PATH
 admin_wordpress=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
-
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
@@ -76,6 +75,8 @@ ynh_mysql_setup_db --db_user="$db_name" --db_name="$db_name"
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=4
+
+ynh_app_setting_set "$app" final_path "$final_path"
 
 mkdir -p /tmp/dl
 pushd /tmp/dl || exit
