@@ -26,7 +26,6 @@ wp_backup=$YNH_APP_ARG_WP_BACKUP
 path_url=$YNH_APP_ARG_PATH
 admin_wordpress=$YNH_APP_ARG_ADMIN
 language=$YNH_APP_ARG_LANGUAGE
-multisite=$YNH_APP_ARG_MULTISITE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
@@ -81,16 +80,12 @@ ynh_mysql_setup_db --db_user="$db_name" --db_name="$db_name"
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=4
 
-mkdir -p /tmp/git
-pushd /tmp/git || exit
-git clone "$wp_backup"
-cd * || exit
-mv * "$final_path"
+mkdir -p /tmp/dl
+pushd /tmp/dl || exit
+wget -O wp.tar.gz "$wp_backup" || exit
+tar -xvf wp.tar.gz || exit
+cp -a solution/* "$final_path"
 popd || exit
-pushd "$final_path" || exit
-git config credential.helper store
-popd || exit
-rm -r /tmp/git
 
 #=================================================
 # NGINX CONFIGURATION
@@ -135,31 +130,6 @@ do
 	sleep 0.5
 done
 
-#=================================================
-# CONFIGURE MULTISITE
-#=================================================
-
-if [ "$multisite" -eq 1 ]
-then
-	ynh_script_progression --message="Configuring multisite..." --weight=2
-
-	ynh_replace_string --match_string="#--MULTISITE--" --replace_string="" --target_file=/etc/nginx/conf.d/"$domain".d/"$app".conf
-	# Allow multisite
-	ynh_replace_string --match_string="//--MULTISITE1--define" --replace_string="define " --target_file="$final_path"/wp-config.php
-
-	# Activate multisite via wp-cli
-	ynh_exec_fully_quiet "$wpcli_alias" core multisite-convert --base="$path_url"/
-
-	# Activate multisite in wordpress config
-	ynh_replace_string --match_string="//--MULTISITE2--define" --replace_string="define" --target_file="$final_path"/wp-config.php
-
-	ynh_mysql_connect_as --user="$db_name" --password="$db_pwd" --database="$db_name" < ../conf/sql/multisite.sql
-	plugin_network="--network"
-else
-	ynh_mysql_connect_as --user="$db_name" --password="$db_pwd" --database="$db_name" < ../conf/sql/single.sql
-	plugin_network=""
-fi
-
 
 #=================================================
 # IMPORT WORDPRESS DB
@@ -167,14 +137,14 @@ fi
 
 if [ -e "$final_path/bdd.sql" ]; then
 ynh_print_info --message="Check SQL..."
-sed -i "s@"$old_domain"@"$domain"@g" "$final_path/bdd.sql"
+sed -i "s@"$old_domain"@"$domain"@g" "$final_path/conf/bdd.sql"
 # That help for debug
 cat "$final_path/bdd.sql" | grep "$old_domain"
 ynh_print_info --message="Import SQL..."
-pv "$final_path/bdd.sql | mysql -u "$db_name" -p"$db_pwd" "$db_name"
+pv "$final_path/conf/bdd.sql | mysql -u "$db_name" -p"$db_pwd" "$db_name"
 #ynh_mysql_execute_file_as_root --file="$final_path/bdd.sql" --database="$db_name"
 ynh_print_info --message="Remove SQL..."
-ynh_secure_remove "$final_path/*.sql"
+ynh_secure_remove "$final_path/conf/*.sql"
 fi
 
 #=================================================
@@ -197,8 +167,6 @@ find "$final_path"/* -type f -exec chmod 644 $(basename '{}') \;
 chmod 0644 .htaccess
 chmod 0640 wp-config.php
 chown -R "$app": "$final_path"
-# Except the file config wp-config.php
-#chown root: "$final_path"/wp-config.php
 
 #=================================================
 # SETUP FAIL2BAN
